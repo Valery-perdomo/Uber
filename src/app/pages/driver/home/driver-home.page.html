@@ -1,0 +1,138 @@
+<ion-content class="pastel-soft">
+  <div class="screen">
+    <!-- Encabezado -->
+    <header class="head">
+      <div>
+        <p class="role">Conductor · {{ approved() ? 'aprobado' : approval() === 'unknown' ? 'verificando' : 'en revisión' }}</p>
+        <h1>{{ shortName() }}</h1>
+      </div>
+      <a class="avatar" routerLink="/profile" aria-label="Mi perfil" style="text-decoration: none">{{ user()?.name | initials }}</a>
+    </header>
+
+    @if (!approved() && approval() !== 'unknown') {
+      <!-- Cuenta pendiente -->
+      <section class="review glass appear">
+        <span class="review-icon"><ion-icon name="hourglass-outline" aria-hidden="true"></ion-icon></span>
+        <h2>
+          @switch (approval()) {
+            @case ('rejected') { Tu solicitud fue rechazada }
+            @case ('suspended') { Tu cuenta está suspendida }
+            @default { Tu cuenta está en revisión }
+          }
+        </h2>
+        <p class="muted">
+          @switch (approval()) {
+            @case ('rejected') { Comunícate con soporte para conocer el motivo y corregir tus datos. }
+            @case ('suspended') { Por ahora no puedes recibir viajes. Comunícate con soporte. }
+            @default { Un administrador está revisando tu licencia y los datos de tu vehículo. Cuando te aprueben podrás conectarte y recibir viajes. }
+          }
+        </p>
+        <span class="pill" [class.durazno]="approval() === 'pending'" [class.rosa]="approval() !== 'pending'">
+          Estado: {{ approval() === 'pending' ? 'Pendiente' : approval() === 'rejected' ? 'Rechazado' : 'Suspendido' }}
+        </span>
+      </section>
+    } @else {
+      <!-- En línea / desconectado -->
+      <section class="status-card appear" [class.on]="online()">
+        <div>
+          <p class="status-title">{{ online() ? 'EN LÍNEA' : 'DESCONECTADO' }}</p>
+          <p class="status-sub">{{ online() ? 'Recibiendo solicitudes' : 'Actívate para recibir solicitudes' }}</p>
+        </div>
+        <button
+          type="button"
+          class="switch"
+          role="switch"
+          [class.on]="online()"
+          [class.light]="online()"
+          [attr.aria-checked]="online()"
+          aria-label="Disponibilidad"
+          [disabled]="toggling() || approval() === 'unknown'"
+          (click)="toggleOnline()"
+        ></button>
+      </section>
+    }
+
+    <!-- Ganancias del día -->
+    <section class="stats appear">
+      <div>
+        <p class="eyebrow">Ganado hoy</p>
+        <p class="stat">{{ stats().earned | cop }}</p>
+      </div>
+      <div class="divider" aria-hidden="true"></div>
+      <div>
+        <p class="eyebrow">Viajes</p>
+        <p class="stat">{{ stats().trips }}</p>
+      </div>
+    </section>
+
+    @if (pendingTrip(); as t) {
+      <button type="button" class="resume glass" (click)="continueTrip()">
+        <ion-icon name="car-sport-outline" aria-hidden="true"></ion-icon>
+        <span>Tienes un viaje en curso (#{{ t.trip.id }})</span>
+        <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
+      </button>
+    }
+
+    @if (approved() && online()) {
+      @if (current(); as req) {
+        <!-- Solicitud entrante -->
+        <section class="request glass appear" aria-live="polite">
+          <div class="req-top">
+            <span class="pill">Nueva solicitud</span>
+            <span class="mono muted">{{ req.estimated_distance_km | km }}</span>
+          </div>
+
+          <p class="req-price grad-text">{{ fare(req) | cop }}</p>
+
+          <div class="req-stops">
+            <p><span class="dot origin" aria-hidden="true"></span>{{ req.origin_name }}</p>
+            <p><span class="dot dest" aria-hidden="true"></span>{{ req.destination_name }}</p>
+          </div>
+          <p class="client muted">Cliente: {{ req.client?.name ?? 'Pasajero' }}</p>
+
+          <div class="timer" role="timer" [attr.aria-label]="'Quedan ' + countdown() + ' segundos para aceptar'">
+            <div class="timer-bar" [style.width.%]="(countdown() / acceptSeconds) * 100"></div>
+          </div>
+          <p class="timer-text mono">{{ countdown() }} s para aceptar</p>
+
+          <div class="slider" [class.busy]="accepting()">
+            <div class="slider-fill" [style.width]="'calc((100% - 60px) * ' + slide() + ' + 60px)'"></div>
+            <span class="slider-text">{{ accepting() ? 'Aceptando…' : 'Desliza para aceptar' }}</span>
+            <button
+              type="button"
+              class="slider-handle"
+              [class.dragging]="dragging()"
+              [style.left]="'calc((100% - 60px) * ' + slide() + ' + 4px)'"
+              aria-label="Aceptar solicitud (desliza o presiona Enter)"
+              (pointerdown)="onDragStart($event)"
+              (pointermove)="onDragMove($event)"
+              (pointerup)="onDragEnd()"
+              (pointercancel)="onDragEnd()"
+              (keydown.enter)="accept()"
+              (keydown.space)="accept()"
+            >
+              @if (accepting()) { <ion-spinner name="crescent"></ion-spinner> } @else { <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon> }
+            </button>
+          </div>
+        </section>
+
+        <footer class="foot">
+          <span class="muted">{{ waiting() ? '+' + waiting() + (waiting() === 1 ? ' solicitud en espera' : ' solicitudes en espera') : 'Sin más solicitudes' }}</span>
+          <button type="button" class="link" (click)="ignore(req)">Ignorar esta</button>
+        </footer>
+      } @else {
+        <section class="waiting appear">
+          <div class="radar" aria-hidden="true"><span></span><span></span><ion-icon name="car-sport-outline"></ion-icon></div>
+          <h3>Esperando solicitudes…</h3>
+          <p class="muted">Mantén la app abierta. Las nuevas solicitudes aparecerán aquí.</p>
+        </section>
+      }
+    } @else if (approved()) {
+      <section class="waiting appear">
+        <ion-icon class="off-icon" name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <h3>Estás desconectado</h3>
+        <p class="muted">Activa el interruptor para empezar a recibir viajes.</p>
+      </section>
+    }
+  </div>
+</ion-content>

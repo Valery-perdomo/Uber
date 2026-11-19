@@ -1,0 +1,109 @@
+/* Pantalla completa: el mapa ocupa todo el fondo */
+.wrap { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Mapa de fondo en toda la pantalla */
+.map { position: absolute; inset: 0; z-index: 0; }
+
+/* Saludo flotante ("Hola, Valery") */
+.greet {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 10px;
+  width: calc(100% - 32px); max-width: 448px;
+  margin: calc(14px + var(--ion-safe-area-top, 0px)) auto 0; padding: 10px 10px 10px 12px; border-radius: 22px;
+  .greet-text { flex: 1; min-width: 0; }
+  .hello { margin: 0; font-size: 0.78rem; color: var(--p-ink-soft); }
+  .question { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  .icon-btn { width: 40px; height: 40px; font-size: 1.1rem; }
+}
+
+/* Panel blanco de abajo (flota sobre el mapa) */
+.sheet {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 480px; margin: auto auto 0;
+  padding: 10px 20px 24px; border-radius: 30px 30px 0 0;
+  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(18px);
+  box-shadow: 0 -12px 40px rgba(124, 92, 214, 0.18);
+}
+.handle { width: 44px; height: 5px; margin: 0 auto 16px; border-radius: 99px; background: var(--p-line); }
+.loading { display: grid; place-items: center; padding: 40px 0; color: var(--p-lila-strong); }
+
+/* Recogida y destino */
+.stops { margin-bottom: 14px; }
+.stop-row { display: flex; align-items: center; gap: 12px; }
+.marker { flex-shrink: 0; width: 16px; height: 16px;
+  &.origin { border: 4px solid var(--p-lila-strong); border-radius: 50%; background: #fff; }
+  &.dest { border-radius: 4px; background: var(--p-rosa-strong); }
+}
+.connector { display: block; height: 14px; margin-left: 7px; border-left: 2px dashed var(--p-lila); }
+.stop {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start;
+  padding: 8px 12px; border: 1.5px solid transparent; border-radius: 14px;
+  background: transparent; color: var(--p-ink); font-family: var(--ion-font-family); text-align: left; cursor: pointer;
+  &:hover, &.active { background: var(--p-lila-soft); }
+  &.active { border-color: var(--p-lila); }
+  strong { max-width: 100%; overflow: hidden; font-size: 1rem; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
+  .placeholder { color: var(--p-lila-strong); }
+  small { color: var(--p-ink-soft); font-size: 0.8rem; }
+}
+.locate { width: 40px; height: 40px; ion-spinner { width: 18px; height: 18px; } }
+
+/* Buscador de lugares */
+.search-box {
+  display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 8px 0 16px;
+  border: 1.5px solid var(--p-lila-strong); border-radius: 16px; background: #fff; color: var(--p-lila-strong);
+  input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--p-ink); font-family: var(--ion-font-family); font-size: 1rem; }
+  .clear { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--p-lila-soft); color: var(--p-lila-strong); cursor: pointer; }
+}
+.suggestions {
+  margin: 10px 0 0; padding: 0; list-style: none;
+  button {
+    display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 6px;
+    border: 0; border-bottom: 1px solid #f0eaff; background: transparent;
+    color: var(--p-ink); font-family: var(--ion-font-family); text-align: left; cursor: pointer;
+  }
+  .sug-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: var(--p-lila-soft); color: var(--p-lila-strong); }
+  .sug-text { flex: 1; min-width: 0; display: flex; flex-direction: column; small { color: var(--p-ink-soft); } }
+  .sug-km { color: var(--p-ink-soft); font-size: 0.8rem; }
+  .none { padding: 16px 6px; color: var(--p-ink-soft); }
+  .map-option strong { color: var(--p-lila-strong); }
+  .sug-icon.map-icon { background: var(--p-grad); color: #fff; }
+  .searching-row { display: flex; align-items: center; gap: 8px; color: var(--p-lila-strong); }
+}
+.hint-search { margin: 10px 2px 0; color: var(--p-ink-soft); font-size: 0.72rem; }
+
+/* Tarjeta de tarifa */
+.fare {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+  padding: 16px 18px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--p-lila-soft), var(--p-rosa-soft));
+  .price { margin: 2px 0 0; font-size: 2.6rem; font-weight: 900; line-height: 1; &.small { font-size: 1.7rem; } }
+  &.compact { margin: 16px 0; text-align: left; }
+  &.skeleton, &.empty-fare { flex-direction: column; align-items: center; justify-content: center; min-height: 92px; margin-bottom: 16px; text-align: center; p { margin: 0; } }
+  &.skeleton { flex-direction: row; gap: 8px; color: var(--p-lila-strong); }
+}
+.fare-meta { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.85rem; span:last-child { color: var(--p-ink-soft); } }
+.breakdown { margin: 10px 2px 16px; color: var(--p-ink-soft); font-size: 0.66rem; }
+
+/* Buscando conductor */
+.searching {
+  text-align: center;
+  h2 { margin: 6px 0 4px; font-size: 1.4rem; font-weight: 800; }
+  .route-line { margin: 0; font-size: 0.9rem; }
+  .timer { margin: 6px 0 0; color: var(--p-lila-strong); font-size: 1.1rem; }
+}
+.radar {
+  position: relative; display: grid; place-items: center; width: 86px; height: 86px; margin: 4px auto 8px;
+  span { position: absolute; inset: 22px; border-radius: 50%; background: var(--p-lila); animation: p-pulse 2s ease-out infinite; &:nth-child(2) { animation-delay: 1s; } }
+  ion-icon { position: relative; width: 52px; height: 52px; padding: 12px; border-radius: 50%; background: var(--p-grad); color: #fff; }
+}
+.notice { margin: 14px 0 0; padding: 12px 14px; border-radius: 14px; background: var(--p-durazno); color: var(--p-durazno-strong); font-size: 0.88rem; font-weight: 700; }
+
+/* Elegir en el mapa */
+.pick { text-align: left;
+  .pick-hint { margin: 2px 0 12px; color: var(--p-ink-soft); font-size: 0.9rem; }
+  .pick-address { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 12px 14px; border-radius: 16px; background: var(--p-lila-soft); }
+  .pick-text { flex: 1; min-width: 0; display: flex; flex-direction: column;
+    strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 800; }
+    small { color: var(--p-ink-soft); } }
+  .cancel-pick { display: block; margin: 12px auto 0; color: var(--p-ink-soft); }
+}

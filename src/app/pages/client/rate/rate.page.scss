@@ -1,0 +1,24 @@
+.screen { justify-content: center; }
+
+.card-rate { display: flex; flex-direction: column; align-items: center; padding: 26px 22px 18px; border-radius: 32px; text-align: center; }
+.done { margin-bottom: 22px; }
+h1 { margin: 18px 0 4px; font-size: 1.8rem; font-weight: 900; }
+.details { margin: 0 0 18px; color: var(--p-ink-soft); font-size: 0.75rem; }
+
+/* Estrellas */
+.stars { display: flex; gap: 6px;
+  button { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; background: none; color: #d8cfee; font-size: 2.2rem; cursor: pointer;
+    &.on { color: #f2b33d; } &:hover { transform: scale(1.1); } }
+}
+.score-label { min-height: 1.2em; margin: 4px 0 16px; color: var(--p-lila-strong); font-weight: 800; }
+
+.tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
+.field { width: 100%; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* Reportar incidencia */
+.incident { display: flex; align-items: center; justify-content: space-between; width: 100%; margin: 2px 0 6px; padding: 0 4px; font-weight: 700; }
+.incident-note { width: 100%; margin: 6px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--p-durazno); color: var(--p-durazno-strong); font-size: 0.85rem; text-align: left; }
+
+.btn { margin-top: 18px; }
+.skip { margin-top: 14px; color: var(--p-ink-soft); }

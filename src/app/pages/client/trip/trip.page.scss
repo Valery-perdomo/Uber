@@ -1,0 +1,59 @@
+.loading { display: grid; place-items: center; min-height: 100vh; color: var(--p-lila-strong); }
+
+/* Pantalla completa: el mapa ocupa todo el fondo */
+.wrap { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+.map { position: absolute; inset: 0; z-index: 0; }
+
+/* Tarjeta de arriba con degradado: tiempo de llegada */
+.hero {
+  position: relative; z-index: 2;
+  width: calc(100% - 32px); max-width: 448px;
+  margin: calc(14px + var(--ion-safe-area-top, 0px)) auto 0; padding: 16px 20px 18px;
+  border-radius: 26px; background: var(--p-grad); color: #fff;
+  box-shadow: 0 16px 36px rgba(124, 92, 214, 0.3);
+  .hero-top { display: flex; align-items: center; justify-content: space-between; }
+  .eyebrow.light { margin: 0; color: rgba(255, 255, 255, 0.9); }
+  .live { width: 10px; height: 10px; border-radius: 50%; background: #fff; animation: live 1.6s ease-out infinite; }
+  .big { margin: 4px 0 2px; font-size: 3.4rem; font-weight: 900; line-height: 1; letter-spacing: -0.04em;
+    span { margin-left: 6px; font-size: 1.3rem; letter-spacing: 0; } }
+  .sub { margin: 0; font-size: 0.95rem; font-weight: 700; }
+}
+@keyframes live { 50% { opacity: 0.3; } }
+
+/* Panel blanco de abajo (flota sobre el mapa) */
+.sheet {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 480px; margin: auto auto 0;
+  padding: 10px 20px 24px; border-radius: 30px 30px 0 0;
+  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(18px);
+  box-shadow: 0 -12px 40px rgba(124, 92, 214, 0.18);
+}
+.handle { width: 44px; height: 5px; margin: 0 auto 14px; border-radius: 99px; background: var(--p-line); }
+
+/* Conductor y placa */
+.driver {
+  display: flex; align-items: center; gap: 12px;
+  .avatar { flex-shrink: 0; width: 52px; height: 52px; }
+  .who { flex: 1; min-width: 0; }
+  .name { margin: 0; font-size: 1.1rem; font-weight: 800; }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 2px 0 0; color: var(--p-ink-soft); font-size: 0.85rem; ion-icon { color: #f2b33d; } }
+}
+.plate { flex-shrink: 0; padding: 5px 10px; border: 2px solid var(--p-ink); border-radius: 10px; background: #fff8d9; font-size: 1.05rem; letter-spacing: 0.08em; }
+.fare-row { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 0; padding: 12px 16px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--p-lila-soft), var(--p-rosa-soft));
+  strong { font-size: 1.2rem; font-weight: 900; color: var(--p-lila-strong); } }
+
+/* Botones redondos: Llamar, Cancelar, SOS */
+.actions { display: flex; justify-content: center; gap: 28px; padding-top: 20px; }
+.action {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0; border: 0; background: none;
+  color: var(--p-ink); font-family: var(--ion-font-family); font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  &:disabled { opacity: 0.6; }
+}
+.circle {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; font-size: 1.4rem;
+  &.call { background: var(--p-menta); color: var(--p-menta-strong); }
+  &.cancel { border: 2px solid var(--p-rosa); background: var(--p-rosa-soft); color: var(--p-danger); }
+  &.sos { background: var(--p-danger); color: #fff; font-size: 0.95rem; font-weight: 900; box-shadow: 0 8px 18px rgba(201, 65, 95, 0.35); }
+  ion-spinner { width: 22px; height: 22px; }
+}

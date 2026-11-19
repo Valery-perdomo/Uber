@@ -1,0 +1,62 @@
+<ion-content class="pastel-soft">
+  <div class="screen">
+    <div class="topbar">
+      <a class="icon-btn" [routerLink]="home()" aria-label="Volver">
+        <ion-icon name="arrow-back" aria-hidden="true"></ion-icon>
+      </a>
+      <h1>Mi perfil</h1>
+      @if (loading()) { <ion-spinner name="dots" class="top-spinner"></ion-spinner> }
+    </div>
+
+    @if (user(); as u) {
+      <!-- Tarjeta principal -->
+      <section class="card glass appear">
+        <span class="avatar big ring">{{ u.name | initials }}</span>
+        <h2>{{ u.name }}</h2>
+        <div class="pills">
+          <span class="pill">{{ roleName() }}</span>
+          <span [class]="'pill ' + (u.status | statusTone)">{{ u.status | statusLabel }}</span>
+        </div>
+      </section>
+
+      <!-- Datos de la cuenta -->
+      <section class="panel glass appear">
+        <p class="eyebrow">Mis datos</p>
+        <dl>
+          <div><dt>Correo</dt><dd>{{ u.email }}</dd></div>
+          <div><dt>Celular</dt><dd class="mono">{{ u.phone || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <!-- Conductor: licencia y vehículo -->
+      @if (u.role === 'driver') {
+        <section class="panel glass appear">
+          <p class="eyebrow">Conductor</p>
+          <dl>
+            @if (profile(); as p) {
+              <div><dt>Estado</dt><dd><span [class]="'pill ' + (p.approval_status | statusTone)">{{ p.approval_status | statusLabel }}</span></dd></div>
+              <div><dt>Licencia</dt><dd class="mono">{{ p.license_number || '—' }}</dd></div>
+              @if (rating(); as r) {
+                <div><dt>Calificación</dt><dd><ion-icon name="star" class="star" aria-hidden="true"></ion-icon> {{ r }}</dd></div>
+              }
+            }
+            @if (vehicle(); as v) {
+              <div><dt>Vehículo</dt><dd>{{ v.brand }} {{ v.model }} {{ v.year ?? '' }}</dd></div>
+              <div><dt>Color</dt><dd>{{ v.color || '—' }}</dd></div>
+              <div><dt>Placa</dt><dd><span class="plate mono">{{ v.plate }}</span></dd></div>
+            }
+          </dl>
+          @if (!profile() && !loading()) {
+            <p class="muted small">El servidor no envió los datos del vehículo en tu perfil.</p>
+          }
+        </section>
+      }
+    }
+
+    <button class="btn danger logout" type="button" (click)="logout()" [disabled]="leaving()">
+      @if (leaving()) { <ion-spinner name="crescent"></ion-spinner> } @else {
+        <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon> Cerrar sesión
+      }
+    </button>
+  </div>
+</ion-content>

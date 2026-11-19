@@ -1,0 +1,396 @@
+<ion-content class="pastel-soft">
+  <div class="admin">
+    <!-- Menú lateral -->
+    <nav class="side" aria-label="Secciones del panel">
+      <span class="logo" aria-hidden="true">U</span>
+      @for (item of nav; track item.key) {
+        <button
+          type="button"
+          class="nav-btn"
+          [class.on]="section() === item.key"
+          [attr.aria-current]="section() === item.key ? 'page' : null"
+          [attr.aria-label]="item.label"
+          [title]="item.label"
+          (click)="go(item.key)"
+        >
+          <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+          <span class="nav-label">{{ item.label }}</span>
+        </button>
+      }
+      <button type="button" class="nav-btn logout" aria-label="Cerrar sesión" title="Cerrar sesión" (click)="logout()">
+        <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+        <span class="nav-label">Salir</span>
+      </button>
+    </nav>
+
+    <main class="main">
+      <!-- Encabezado -->
+      <header class="top">
+        <div>
+          <p class="muted kicker">Panel de administración</p>
+          <h1>{{ title() }}</h1>
+        </div>
+        <div class="top-actions">
+          <label class="search">
+            <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+            <input type="search" placeholder="Buscar viaje, conductor…" aria-label="Buscar viaje o conductor" [value]="search()" (input)="onSearch($event)" />
+          </label>
+          <button type="button" class="icon-btn" (click)="refresh()" aria-label="Actualizar" title="Actualizar">
+            <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+          </button>
+          <span class="avatar">{{ user?.name | initials }}</span>
+        </div>
+      </header>
+
+      @if (loading()) {
+        <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+      }
+
+      <!-- ===================== RESUMEN ===================== -->
+      @if (section() === 'overview') {
+        <section class="kpis appear">
+          <div class="kpi hero">
+            <p class="eyebrow">Ingresos totales</p>
+            <p class="value">{{ stats().total_revenue | cop }}</p>
+            <p class="foot">{{ numberOf(stats().completed_trips) }} viajes completados · {{ numberOf(stats().cancelled_trips) }} cancelados</p>
+          </div>
+          <div class="kpi">
+            <p class="eyebrow">Clientes</p>
+            <p class="value">{{ numberOf(stats().total_clients) }}</p>
+          </div>
+          <div class="kpi">
+            <p class="eyebrow">Conductores</p>
+            <p class="value">
+              {{ numberOf(stats().total_drivers) }}
+              @if (numberOf(stats().pending_drivers)) { <span class="pill durazno">{{ numberOf(stats().pending_drivers) }} por aprobar</span> }
+            </p>
+          </div>
+          <div class="kpi">
+            <p class="eyebrow">Viajes activos</p>
+            <p class="value">{{ numberOf(stats().active_trips) }}</p>
+          </div>
+          <div class="kpi">
+            <p class="eyebrow">Solicitudes pendientes</p>
+            <p class="value">{{ numberOf(stats().pending_requests) }}</p>
+          </div>
+        </section>
+
+        <div class="cols appear">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Por aprobar</h2>
+              <span class="pill" [class.durazno]="filteredPending().length" [class.menta]="!filteredPending().length">
+                {{ filteredPending().length }} {{ filteredPending().length === 1 ? 'pendiente' : 'pendientes' }}
+              </span>
+            </div>
+
+            @for (d of filteredPending(); track d.id) {
+              <div class="driver-row">
+                <span class="avatar ring small">{{ d.user?.name | initials }}</span>
+                <div class="who">
+                  <strong>{{ d.user?.name }}</strong>
+                  <small>{{ d.user?.email }}</small>
+                  <small class="mono">Licencia {{ d.license_number ?? '—' }}</small>
+                </div>
+                @if (d.vehicles?.[0]; as v) {
+                  <div class="veh">
+                    <span class="plate mono">{{ v.plate }}</span>
+                    <small>{{ v.brand }} {{ v.model }} {{ v.year }}</small>
+                  </div>
+                }
+                <div class="row-actions">
+                  <button type="button" class="btn small" [disabled]="working() === d.id" (click)="approve(d)">Aprobar</button>
+                  <button type="button" class="btn small ghost" [disabled]="working() === d.id" (click)="reject(d)">Rechazar</button>
+                </div>
+              </div>
+            } @empty {
+              <p class="muted none">No hay conductores esperando aprobación.</p>
+            }
+
+            <h2 class="sub-title">Viajes recientes</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>ID</th><th>Cliente</th><th>Conductor</th><th>Tarifa</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                  @for (t of filteredRecent(); track t.id) {
+                    <tr>
+                      <td class="mono muted">#{{ t.id }}</td>
+                      <td>{{ clientName(t) }}</td>
+                      <td>{{ driverName(t) }}</td>
+                      <td class="mono">{{ t.final_fare ?? t.estimated_fare | cop }}</td>
+                      <td><span [class]="'pill ' + (t.status | statusTone)">{{ t.status | statusLabel }}</span></td>
+                    </tr>
+                  } @empty {
+                    <tr><td colspan="5" class="muted none">Aún no hay viajes.</td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="panel side-panel">
+            <div class="panel-head">
+              <h2>Tarifa activa</h2>
+              @if (activeFare()) { <span class="pill menta">● Activa</span> }
+            </div>
+            @if (activeFare(); as f) {
+              <p class="muted fare-name">{{ f.name }}</p>
+              <dl class="fare-list mono">
+                @for (row of fareRows(); track row.key) {
+                  <div><dt>{{ row.key }}</dt><dd>{{ row.value }}</dd></div>
+                }
+              </dl>
+            } @else {
+              <p class="muted none">No hay una tarifa activa.</p>
+            }
+            <button type="button" class="btn ghost new-fare" (click)="openFare()">
+              <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+              Nueva tarifa
+            </button>
+
+            <div class="incidents">
+              <span>Incidencias recientes</span>
+              <strong>{{ incidents().length ? incidents().length : 'Ninguna' }}</strong>
+            </div>
+            @for (i of incidents().slice(0, 4); track $index) {
+              <p class="incident muted">{{ i.comment ?? i.description ?? i.message ?? 'Incidencia #' + (i.id ?? $index + 1) }}</p>
+            }
+          </aside>
+        </div>
+      }
+
+      <!-- ===================== CONDUCTORES ===================== -->
+      @if (section() === 'drivers') {
+        <div class="filters appear">
+          @for (f of driverFilters; track f) {
+            <button type="button" class="chip" [class.on]="driverFilter() === f" (click)="setDriverFilter(f)">{{ filterLabel(f, 'driver') }}</button>
+          }
+        </div>
+        <section class="panel appear">
+          @for (d of filteredDrivers(); track d.id) {
+            <div class="driver-row">
+              <span class="avatar ring small">{{ d.user?.name | initials }}</span>
+              <div class="who">
+                <strong>{{ d.user?.name }}</strong>
+                <small>{{ d.user?.email }} @if (d.user?.phone; as phone) { · {{ phone }} }</small>
+                <small class="mono">Licencia {{ d.license_number ?? '—' }} · ★ {{ numberOf(d.rating_average || 5).toFixed(2) }}</small>
+                @if (d.admin_notes) { <small class="notes">Nota: {{ d.admin_notes }}</small> }
+              </div>
+              @if (d.vehicles?.[0]; as v) {
+                <div class="veh">
+                  <span class="plate mono">{{ v.plate }}</span>
+                  <small>{{ v.brand }} {{ v.model }} {{ v.year }}</small>
+                </div>
+              }
+              <span [class]="'pill ' + (d.approval_status | statusTone)">{{ d.approval_status | statusLabel }}</span>
+              <div class="row-actions">
+                @if (d.approval_status !== 'approved') {
+                  <button type="button" class="btn small" [disabled]="working() === d.id" (click)="approve(d)">Aprobar</button>
+                }
+                @if (d.approval_status === 'pending') {
+                  <button type="button" class="btn small ghost" [disabled]="working() === d.id" (click)="reject(d)">Rechazar</button>
+                }
+                @if (d.approval_status === 'approved') {
+                  <button type="button" class="btn small ghost" [disabled]="working() === d.id" (click)="reject(d, 'suspended')">Suspender</button>
+                }
+              </div>
+            </div>
+          } @empty {
+            @if (!loading()) { <p class="muted none">No hay conductores con este filtro.</p> }
+          }
+        </section>
+      }
+
+      <!-- ===================== VIAJES ===================== -->
+      @if (section() === 'trips') {
+        <div class="filters appear">
+          @for (f of tripFilters; track f) {
+            <button type="button" class="chip" [class.on]="tripFilter() === f" (click)="setTripFilter(f)">{{ filterLabel(f, 'trip') }}</button>
+          }
+          <label class="date-filter">
+            <span class="sr-only">Fecha</span>
+            <input type="date" [(ngModel)]="tripDate" (change)="loadTrips()" aria-label="Filtrar por fecha" />
+          </label>
+        </div>
+        <section class="panel appear">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Fecha</th><th>Cliente</th><th>Conductor</th><th>Placa</th><th>Tarifa</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                @for (t of filteredTrips(); track t.id) {
+                  <tr>
+                    <td class="mono muted">#{{ t.id }}</td>
+                    <td>{{ tripDateLabel(t) }}</td>
+                    <td>{{ clientName(t) }}</td>
+                    <td>{{ driverName(t) }}</td>
+                    <td class="mono">{{ t.vehicle?.plate ?? '—' }}</td>
+                    <td class="mono">{{ t.final_fare ?? t.estimated_fare | cop }}</td>
+                    <td><span [class]="'pill ' + (t.status | statusTone)">{{ t.status | statusLabel }}</span></td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="7" class="muted none">No hay viajes con este filtro.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- ===================== TARIFAS ===================== -->
+      @if (section() === 'fares') {
+        <div class="filters appear">
+          <button type="button" class="btn small" (click)="openFare()">
+            <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+            Nueva tarifa
+          </button>
+        </div>
+        <div class="fare-grid appear">
+          @for (f of fares(); track f.id) {
+            <section class="panel fare-card" [class.active]="f.active">
+              <div class="panel-head">
+                <h2>{{ f.name }}</h2>
+                <span class="pill" [class.menta]="f.active" [class.gris]="!f.active">{{ f.active ? '● Activa' : 'Inactiva' }}</span>
+              </div>
+              <dl class="fare-list mono">
+                <div><dt>base_fare</dt><dd>{{ f.base_fare | cop }}</dd></div>
+                <div><dt>price_per_km</dt><dd>{{ f.price_per_km | cop }}</dd></div>
+                <div><dt>price_per_minute</dt><dd>{{ f.price_per_minute | cop }}</dd></div>
+                <div><dt>minimum_fare</dt><dd>{{ f.minimum_fare | cop }}</dd></div>
+                <div><dt>surge_multiplier</dt><dd>×{{ f.surge_multiplier }}</dd></div>
+              </dl>
+            </section>
+          } @empty {
+            @if (!loading()) { <p class="muted none">No hay tarifas configuradas.</p> }
+          }
+        </div>
+      }
+
+      <!-- ===================== REPORTES ===================== -->
+      @if (section() === 'reports') {
+        <div class="report-grid appear">
+          @for (b of reportBlocks(); track b.key) {
+            @if (b.kind === 'number') {
+              <div class="kpi">
+                <p class="eyebrow">{{ b.title }}</p>
+                <p class="value">{{ isMoney(b.key) ? (b.value | cop) : b.value }}</p>
+              </div>
+            }
+          }
+        </div>
+        @for (b of reportBlocks(); track b.key) {
+          @if (b.kind === 'object') {
+            <section class="panel appear">
+              <h2>{{ b.title }}</h2>
+              <dl class="kv">
+                @for (e of entriesOf(b.value); track e.key) {
+                  <div><dt>{{ humanize(e.key) }}</dt><dd class="mono">{{ cell(b.value, e.key) }}</dd></div>
+                }
+              </dl>
+            </section>
+          }
+          @if (b.kind === 'list') {
+            <section class="panel appear">
+              <h2>{{ b.title }}</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>@for (c of columnsOf(b.value); track c) { <th>{{ humanize(c) }}</th> }</tr>
+                  </thead>
+                  <tbody>
+                    @for (row of asList(b.value); track $index) {
+                      <tr>@for (c of columnsOf(b.value); track c) { <td>{{ cell(row, c) }}</td> }</tr>
+                    } @empty {
+                      <tr><td class="muted none">Sin datos.</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          }
+          @if (b.kind === 'text') {
+            <section class="panel appear"><h2>{{ b.title }}</h2><p>{{ b.value }}</p></section>
+          }
+        } @empty {
+          @if (!loading()) { <p class="muted none">El reporte no tiene datos todavía.</p> }
+        }
+      }
+
+      <!-- ===================== AUDITORÍA ===================== -->
+      @if (section() === 'audit') {
+        <section class="panel appear">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>@for (c of logColumns(); track c) { <th>{{ humanize(c) }}</th> }</tr>
+              </thead>
+              <tbody>
+                @for (row of filteredLogs(); track $index) {
+                  <tr>@for (c of logColumns(); track c) { <td>{{ cell(row, c) }}</td> }</tr>
+                } @empty {
+                  <tr><td class="muted none">No hay registros.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+    </main>
+  </div>
+
+  <!-- Formulario de nueva tarifa -->
+  @if (fareOpen()) {
+    <div class="overlay" (click)="fareOpen.set(false)">
+      <form class="dialog glass appear" role="dialog" aria-modal="true" aria-labelledby="fare-title" (click)="$event.stopPropagation()" (ngSubmit)="saveFare()" novalidate>
+        <div class="panel-head">
+          <h2 id="fare-title">Nueva tarifa</h2>
+          <button type="button" class="icon-btn" (click)="fareOpen.set(false)" aria-label="Cerrar">
+            <ion-icon name="close" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+
+        <div class="field" [class.invalid]="fareErrors()['name']">
+          <label for="fname">Nombre</label>
+          <input id="fname" name="name" placeholder="Tarifa Hora Pico" [(ngModel)]="fareForm.name" />
+          @if (fareErrors()['name']) { <span class="error">{{ fareErrors()['name'] }}</span> }
+        </div>
+        <div class="field-row">
+          <div class="field" [class.invalid]="fareErrors()['base_fare']">
+            <label for="fbase">Tarifa base</label>
+            <input id="fbase" name="base_fare" type="number" min="0" [(ngModel)]="fareForm.base_fare" />
+          </div>
+          <div class="field" [class.invalid]="fareErrors()['minimum_fare']">
+            <label for="fmin">Tarifa mínima</label>
+            <input id="fmin" name="minimum_fare" type="number" min="0" [(ngModel)]="fareForm.minimum_fare" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" [class.invalid]="fareErrors()['price_per_km']">
+            <label for="fkm">Precio por km</label>
+            <input id="fkm" name="price_per_km" type="number" min="0" [(ngModel)]="fareForm.price_per_km" />
+          </div>
+          <div class="field" [class.invalid]="fareErrors()['price_per_minute']">
+            <label for="fminute">Precio por minuto</label>
+            <input id="fminute" name="price_per_minute" type="number" min="0" [(ngModel)]="fareForm.price_per_minute" />
+          </div>
+        </div>
+        <div class="field" [class.invalid]="fareErrors()['surge_multiplier']">
+          <label for="fsurge">Multiplicador de demanda</label>
+          <input id="fsurge" name="surge_multiplier" type="number" min="1" step="0.1" [(ngModel)]="fareForm.surge_multiplier" />
+          @if (fareErrors()['surge_multiplier']) { <span class="error">{{ fareErrors()['surge_multiplier'] }}</span> }
+        </div>
+        <div class="toggle-row">
+          <span id="factive">Activar al guardar</span>
+          <button type="button" class="switch" role="switch" aria-labelledby="factive" [class.on]="fareForm.active" [attr.aria-checked]="fareForm.active" (click)="fareForm.active = !fareForm.active"></button>
+        </div>
+
+        <button class="btn" type="submit" [disabled]="savingFare()">
+          @if (savingFare()) { <ion-spinner name="crescent"></ion-spinner> } @else { Guardar tarifa }
+        </button>
+      </form>
+    </div>
+  }
+</ion-content>

@@ -1,0 +1,103 @@
+<ion-content class="pastel-soft">
+  @if (state()) {
+    @if (status() === 'completed') {
+      <div class="screen">
+        <div class="progress" aria-label="Estado del viaje">
+          <div class="bars">
+            @for (s of steps; track s.key) { <span class="done"></span> }
+          </div>
+          <div class="labels">
+            <p><span class="current">Finalizado</span></p>
+            <span class="mono muted">VIAJE #{{ tripId }}</span>
+          </div>
+        </div>
+
+        <!-- Resumen final -->
+        <section class="summary glass appear">
+          <ion-icon class="check" name="checkmark-circle" aria-hidden="true"></ion-icon>
+          <h1>Viaje finalizado</h1>
+          <p class="muted">Tarifa definitiva calculada por la plataforma</p>
+          <p class="final grad-text">{{ trip()?.final_fare ?? trip()?.estimated_fare | cop }}</p>
+          <div class="metrics">
+            <div class="metric"><p class="eyebrow">Distancia</p><p class="mono">{{ trip()?.distance_travelled_km ?? distanceKm() | km }}</p></div>
+            <div class="metric"><p class="eyebrow">Tiempo</p><p class="mono">{{ trip()?.duration_travelled_min ?? elapsedMin() ?? '—' }} min</p></div>
+          </div>
+          <p class="muted thanks">{{ clientFirst() }} ya puede calificar su viaje.</p>
+        </section>
+
+        <button class="btn action" type="button" (click)="nextStep()">{{ actionLabel() }}</button>
+      </div>
+    } @else {
+      <div class="wrap">
+        <!-- Mapa de fondo en toda la pantalla -->
+        <div class="map">
+          <app-real-map
+            [origin]="originLL()"
+            [destination]="status() === 'in_progress' ? destLL() : null"
+            [driver]="position()"
+            [padTop]="120"
+            [padBottom]="400"
+          />
+        </div>
+
+        <!-- Progreso de los 4 estados (flota arriba) -->
+        <div class="progress glass appear" aria-label="Estado del viaje">
+          <div class="bars">
+            @for (s of steps; track s.key; let i = $index) {
+              <span [class.done]="i <= stepIndex()"></span>
+            }
+          </div>
+          <div class="labels">
+            <p>
+              @for (s of steps; track s.key; let i = $index; let last = $last) {
+                <span [class.current]="i === stepIndex()">{{ s.label }}</span>@if (!last) { · }
+              }
+            </p>
+            <span class="mono muted">VIAJE #{{ tripId }}</span>
+          </div>
+        </div>
+
+        <!-- Panel de abajo -->
+        <section class="sheet appear">
+          <div class="handle" aria-hidden="true"></div>
+          <p class="eyebrow caption">
+            {{ status() === 'in_progress' ? 'Llevando a ' + clientFirst() + ' hacia' : 'Recoger a ' + clientFirst() + ' en' }}
+          </p>
+          <h1 class="address">{{ status() === 'in_progress' ? request()?.destination_name : request()?.origin_name }}</h1>
+
+          <!-- Métricas -->
+          <div class="metrics">
+            <div class="metric">
+              <p class="eyebrow">Distancia</p>
+              <p class="mono">{{ distanceKm() | km }}</p>
+            </div>
+            <div class="metric">
+              <p class="eyebrow">Tiempo</p>
+              <p class="mono">{{ elapsedMin() ?? request()?.estimated_duration_min ?? '—' }} min</p>
+            </div>
+            <div class="metric highlight">
+              <p class="eyebrow">Tarifa</p>
+              <p class="mono">{{ trip()?.estimated_fare ?? request()?.estimated_fare | cop }}</p>
+            </div>
+          </div>
+
+          <!-- Pasajero -->
+          <div class="client">
+            <span class="avatar soft">{{ clientName() | initials }}</span>
+            <div>
+              <p class="name">{{ clientName() }}</p>
+              <p class="mono muted phone">{{ request()?.client?.phone ?? 'Sin teléfono' }}</p>
+            </div>
+            <button type="button" class="icon-btn call" (click)="call()" [attr.aria-label]="'Llamar a ' + clientName()">
+              <ion-icon name="call-outline" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+
+          <button class="btn action" type="button" [class.ghost]="status() === 'in_progress'" [disabled]="busy()" (click)="nextStep()">
+            @if (busy()) { <ion-spinner name="crescent"></ion-spinner> } @else { {{ actionLabel() }} }
+          </button>
+        </section>
+      </div>
+    }
+  }
+</ion-content>

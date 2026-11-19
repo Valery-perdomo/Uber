@@ -1,38 +1,164 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
+/* Estilos de Ionic (no borrar) */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+/* ===== 1. Colores pastel (los mismos del login) ===== */
+:root {
+  color-scheme: light;
+  --p-lila: #b9a2f5;  --p-lila-strong: #7c5cd6;  --p-lila-soft: #f1ebff;
+  --p-rosa: #f7a8c8;  --p-rosa-strong: #e0709f;  --p-rosa-soft: #fde8f1;
+  --p-menta: #c8f0e1; --p-menta-strong: #23855f;
+  --p-durazno: #ffe0c7; --p-durazno-strong: #a85a22;
+  --p-cielo: #d6e4ff; --p-cielo-strong: #3f63b8;
+  --p-ink: #3d2f5c;   --p-ink-soft: #8a7fa6;     --p-line: #e6dcfb;
+  --p-danger: #c9415f; --p-danger-soft: #fde4ea;
+  --p-grad: linear-gradient(120deg, #7c5cd6, #e0709f);
+  --p-shadow: 0 18px 40px rgba(124, 92, 214, 0.14);
+  --p-shadow-strong: 0 10px 24px rgba(124, 92, 214, 0.35);
+  --p-mono: 'DM Mono', monospace;
+  --ion-font-family: 'Nunito', system-ui, sans-serif;
+  --ion-background-color: #f8f4ff;
+  --ion-text-color: #3d2f5c;
+  --ion-color-primary: #7c5cd6;
+}
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* ===== 2. Fondos ===== */
+$mapa: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 800' preserveAspectRatio='xMidYMid slice'><rect width='400' height='800' fill='%23f8f4ff'/><path d='M-20 520 C 80 480, 140 600, 240 560 S 380 470, 430 500' fill='none' stroke='%23d6e4ff' stroke-width='38' stroke-linecap='round'/><rect x='30' y='50' width='120' height='100' rx='20' fill='%23c8f0e1'/><rect x='240' y='30' width='130' height='70' rx='20' fill='%23efe7ff'/><rect x='250' y='190' width='120' height='110' rx='20' fill='%23ffe0c7'/><rect x='35' y='290' width='100' height='130' rx='20' fill='%23fbd5e6'/><rect x='250' y='370' width='110' height='70' rx='20' fill='%23c8f0e1'/><rect x='30' y='640' width='130' height='110' rx='20' fill='%23efe7ff'/><rect x='250' y='640' width='120' height='120' rx='20' fill='%23c8f0e1'/><g stroke='%23ffffff' stroke-width='14' stroke-linecap='round' fill='none'><path d='M-10 175 H410'/><path d='M-10 460 H410'/><path d='M-10 615 H410'/><path d='M200 -10 V810'/><path d='M-10 250 L410 335'/></g></svg>";
+$manchas:
+  radial-gradient(circle at 10% 10%, rgba(247, 168, 200, 0.4) 0, transparent 38%),
+  radial-gradient(circle at 90% 10%, rgba(214, 228, 255, 0.65) 0, transparent 40%),
+  radial-gradient(circle at 90% 90%, rgba(200, 240, 225, 0.6) 0, transparent 42%),
+  radial-gradient(circle at 5% 92%, rgba(255, 224, 199, 0.55) 0, transparent 40%);
+
+ion-content.pastel-bg::part(background) { background: $manchas, url($mapa) center / cover, #f8f4ff; } // con mapa
+ion-content.pastel-soft::part(background) { background: $manchas, #f8f4ff; }                       // sin mapa
+
+/* ===== 3. Piezas que usan todas las pantallas ===== */
+body { color: var(--p-ink); }
+
+.screen {   // contenedor de cada pantalla (ancho de celular)
+  display: flex; flex-direction: column;
+  width: 100%; max-width: 480px; min-height: 100%; margin: 0 auto;
+  padding: calc(16px + var(--ion-safe-area-top, 0px)) 20px 24px;
+}
+
+.glass {    // tarjeta de vidrio
+  background: rgba(255, 255, 255, 0.66);
+  backdrop-filter: blur(16px);
+  border: 1px solid #fff; border-radius: 24px;
+  box-shadow: var(--p-shadow);
+}
+
+.eyebrow { margin: 0; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--p-ink-soft); }
+.muted { color: var(--p-ink-soft); }
+.mono { font-family: var(--p-mono); }
+.grad-text { background: var(--p-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.link { padding: 0; border: 0; background: none; color: var(--p-lila-strong); font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+
+/* Botón degradado y sus variantes */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 56px; padding: 0 20px;
+  border: 0; border-radius: 16px;
+  background: var(--p-grad); color: #fff; box-shadow: var(--p-shadow-strong);
+  font-family: var(--ion-font-family); font-size: 1.05rem; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+  &:active { transform: scale(0.98); }
+  &:disabled { opacity: 0.55; cursor: default; }
+  ion-spinner { width: 22px; height: 22px; color: currentColor; }
+  &.ghost { background: #fff; color: var(--p-ink); border: 1.5px solid var(--p-line); box-shadow: none; }
+  &.soft { background: var(--p-lila-soft); color: var(--p-lila-strong); box-shadow: none; }
+  &.danger { background: var(--p-danger-soft); color: var(--p-danger); box-shadow: none; }
+  &.small { width: auto; height: 40px; padding: 0 16px; border-radius: 12px; font-size: 0.9rem; }
+}
+
+.icon-btn {   // botón redondo con icono
+  display: inline-grid; place-items: center; flex-shrink: 0;
+  width: 44px; height: 44px; padding: 0;
+  border: 1.5px solid var(--p-line); border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85); color: var(--p-lila-strong); font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.avatar {     // círculo con iniciales
+  display: inline-grid; place-items: center; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--p-grad); color: #fff; font-weight: 800;
+  &.ring { background: #fff; color: var(--p-lila-strong); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--p-lila); }
+  &.big { width: 88px; height: 88px; font-size: 1.7rem; }
+  &.soft { background: var(--p-lila-soft); color: var(--p-lila-strong); }
+}
+
+.pill {       // etiqueta de estado (Completado, Pendiente...)
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+  border-radius: 999px; font-size: 0.75rem; font-weight: 800; white-space: nowrap;
+  background: var(--p-lila-soft); color: var(--p-lila-strong);
+  &.menta { background: var(--p-menta); color: var(--p-menta-strong); }
+  &.durazno { background: var(--p-durazno); color: var(--p-durazno-strong); }
+  &.rosa { background: var(--p-rosa-soft); color: var(--p-rosa-strong); }
+  &.cielo { background: var(--p-cielo); color: var(--p-cielo-strong); }
+  &.gris { background: #efedf4; color: var(--p-ink-soft); }
+}
+
+.chip {       // botón seleccionable (Puntual, Amable...)
+  padding: 8px 14px; border: 1.5px solid var(--p-line); border-radius: 999px;
+  background: #fff; color: var(--p-ink);
+  font-family: var(--ion-font-family); font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  &.on { border-color: transparent; background: var(--p-grad); color: #fff; }
+}
+
+.field {      // campo de formulario: <div class="field"><label>..</label><input></div>
+  display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;
+  > label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--p-ink-soft); }
+  input, textarea, select {
+    width: 100%; min-height: 52px; padding: 0 16px;
+    border: 1.5px solid var(--p-line); border-radius: 16px; outline: none;
+    background: rgba(255, 255, 255, 0.88); color: var(--p-ink);
+    font-family: var(--ion-font-family); font-size: 1rem;
+    &:focus { border-color: var(--p-lila-strong); }
+  }
+  textarea { min-height: 92px; padding: 14px 16px; resize: none; }
+  &.invalid input { border-color: var(--p-rosa-strong); }
+  .error { font-size: 0.8rem; font-weight: 700; color: var(--p-danger); }
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.switch {     // interruptor encendido/apagado
+  position: relative; flex-shrink: 0; width: 54px; height: 32px; padding: 0;
+  border: 0; border-radius: 999px; background: #ddd6ec; cursor: pointer;
+  &::after {
+    content: ''; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px;
+    border-radius: 50%; background: #fff; transition: transform 0.25s;
+  }
+  &.on { background: var(--p-grad); &::after { transform: translateX(22px); } }
+  &.light.on { background: rgba(255, 255, 255, 0.4); }
+  &:disabled { opacity: 0.5; }
+}
+
+.topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; h1 { margin: 0; font-size: 1.4rem; font-weight: 800; } }
+.empty { padding: 32px 20px; text-align: center; color: var(--p-ink-soft); ion-icon { font-size: 2.4rem; color: var(--p-lila); } h3 { color: var(--p-ink); } }
+
+/* Animaciones */
+.appear { animation: p-appear 0.5s ease-out both; }
+@keyframes p-appear { from { opacity: 0; transform: translateY(14px); } }
+@keyframes p-pulse { from { transform: scale(0.6); opacity: 0.7; } to { transform: scale(2.4); opacity: 0; } }
+
+/* ===== 4. Avisos y alertas en pastel ===== */
+ion-toast.toast-pastel {
+  --border-radius: 16px; font-weight: 700;
+  &.toast-success { --background: #e6f8f0; --color: #1d6e4f; }
+  &.toast-danger  { --background: #fde4ea; --color: #a8334f; }
+  &.toast-warning { --background: #fff0e2; --color: #8f4c1c; }
+  &.toast-info    { --background: #f1ebff; --color: #5b3fb0; }
+}
+ion-alert.alert-pastel {
+  .alert-wrapper { border-radius: 24px; }
+  .alert-button { color: var(--p-lila-strong); font-weight: 800; text-transform: none; }
+  .alert-button.danger { color: var(--p-danger); }
+}
+ion-action-sheet.sheet-pastel .action-sheet-destructive { color: var(--p-danger); }

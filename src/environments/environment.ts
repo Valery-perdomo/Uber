@@ -4,5 +4,6 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://20.20.2.171:8000/api'
+  apiUrl: '/api',
+  demo: true, // true = probar sin el servidor del profe · false = usar el backend real
 };

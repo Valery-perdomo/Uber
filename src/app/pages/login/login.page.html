@@ -27,16 +27,27 @@
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
 
-      <ion-button expand="block" type="submit" [disabled]="loading">
-        @if (loading) {
+      <div class="forgot">
+        <a routerLink="/forgot-password">¿La olvidaste?</a>
+      </div>
+
+      <button class="btn submit" type="submit" [disabled]="loading()">
+        @if (loading()) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {
           Iniciar sesión
+          <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
         }
-      </ion-button>
+      </button>
     </form>
 
     <ion-text color="medium" class="hint">
+      <p class="links">
+        ¿Nuevo?
+        <a routerLink="/register">Crear cuenta</a>
+        <span aria-hidden="true">·</span>
+        <a routerLink="/register" [queryParams]="{ role: 'driver' }">Quiero conducir</a>
+      </p>
       <p>Puedes entrar con tu correo o tu número de celular</p>
     </ion-text>
   </div>

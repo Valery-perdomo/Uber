@@ -5,62 +5,62 @@ $rosa-fuerte: #e0709f;
 $menta: #c8f0e1;
 $durazno: #ffe0c7;
 $cielo: #d6e4ff;
-$tinta: #3d2f5c;       
-$tinta-suave: #8a7fa6; 
+$tinta: #3d2f5c;
+$tinta-suave: #8a7fa6;
 
 $mapa: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 800' preserveAspectRatio='xMidYMid slice'><rect width='400' height='800' fill='%23f8f4ff'/><path d='M-20 520 C 80 480, 140 600, 240 560 S 380 470, 430 500' fill='none' stroke='%23d6e4ff' stroke-width='38' stroke-linecap='round'/><rect x='30' y='50' width='120' height='100' rx='20' fill='%23c8f0e1'/><rect x='240' y='30' width='130' height='70' rx='20' fill='%23efe7ff'/><rect x='250' y='190' width='120' height='110' rx='20' fill='%23ffe0c7'/><rect x='35' y='290' width='100' height='130' rx='20' fill='%23fbd5e6'/><rect x='250' y='370' width='110' height='70' rx='20' fill='%23c8f0e1'/><rect x='30' y='640' width='130' height='110' rx='20' fill='%23efe7ff'/><rect x='250' y='640' width='120' height='120' rx='20' fill='%23c8f0e1'/><g stroke='%23ffffff' stroke-width='14' stroke-linecap='round' fill='none'><path d='M-10 175 H410'/><path d='M-10 460 H410'/><path d='M-10 615 H410'/><path d='M200 -10 V810'/><path d='M-10 250 L410 335'/></g><path d='M110 700 C 110 610, 200 620, 200 530 S 210 340, 300 310 S 320 210, 300 125' fill='none' stroke='%237c5cd6' stroke-opacity='0.5' stroke-width='5' stroke-linecap='round' stroke-dasharray='10 10'><animate attributeName='stroke-dashoffset' from='0' to='-40' dur='2s' repeatCount='indefinite'/></path><circle cx='110' cy='700' r='10' fill='%23ffffff' stroke='%237c5cd6' stroke-width='5' stroke-opacity='0.7'/><circle cx='300' cy='120' r='14' fill='%23e0709f' fill-opacity='0.75'/><circle cx='300' cy='120' r='5' fill='%23ffffff'/></svg>";
 
 // ===== Fondo: mapa + manchas de color suaves =====
 ion-content {
-    --padding-start: 20px;
-    --padding-end: 20px;
-    font-family: 'Nunito', system-ui, sans-serif;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  font-family: 'Nunito', system-ui, sans-serif;
 }
 
 ion-content::part(background) {
-background:
+  background:
     radial-gradient(circle at 12% 18%, rgba(247, 168, 200, 0.45) 0, transparent 38%),
     radial-gradient(circle at 88% 12%, rgba(214, 228, 255, 0.6) 0, transparent 40%),
     radial-gradient(circle at 85% 88%, rgba(200, 240, 225, 0.55) 0, transparent 42%),
     radial-gradient(circle at 8% 92%, rgba(255, 224, 199, 0.55) 0, transparent 40%),
     url($mapa) center / cover no-repeat,
     #f8f4ff;
-background-size: 160% 160%, 160% 160%, 160% 160%, 160% 160%, cover, auto;
-animation: fondo 18s ease-in-out infinite alternate;
+  background-size: 160% 160%, 160% 160%, 160% 160%, 160% 160%, cover, auto;
+  animation: fondo 18s ease-in-out infinite alternate;
 }
-
 
 .login-container {
-position: relative;
-max-width: 400px;
-margin: 0 auto;
-min-height: 100%;
-display: flex;
-flex-direction: column;
-justify-content: center;
-padding: 24px 0;
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 0;
 }
 
+// ===== Tarjeta de vidrio (3 partes) =====
 .brand,
 form,
 .hint {
-position: relative;
-background: rgba(255, 255, 255, 0.62);
--webkit-backdrop-filter: blur(16px);
-backdrop-filter: blur(16px);
-border-left: 1px solid rgba(255, 255, 255, 0.9);
-border-right: 1px solid rgba(255, 255, 255, 0.9);
+  position: relative;
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 .brand {
-margin: 0 !important;
-padding: 36px 28px 8px;
-text-align: center;
-border-top: 1px solid rgba(255, 255, 255, 0.9);
-border-radius: 32px 32px 0 0;
-animation: aparecer 0.6s ease-out both;
+  margin: 0 !important;
+  padding: 36px 28px 8px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32px 32px 0 0;
+  animation: aparecer 0.6s ease-out both;
 
-&::before {
+  // Pin de ubicación
+  &::before {
     content: '';
     display: block;
     width: 52px;
@@ -68,14 +68,15 @@ animation: aparecer 0.6s ease-out both;
     margin: 4px auto 28px;
     border-radius: 50% 50% 50% 0;
     background:
-    radial-gradient(circle at center, #fff 0 9px, transparent 10px),
-    linear-gradient(135deg, $lila-fuerte, $rosa-fuerte);
+      radial-gradient(circle at center, #fff 0 9px, transparent 10px),
+      linear-gradient(135deg, $lila-fuerte, $rosa-fuerte);
     box-shadow: 0 10px 22px rgba(224, 112, 159, 0.35);
     transform: rotate(-45deg);
     animation: flotar-pin 2.8s ease-in-out infinite;
-}
+  }
 
-&::after {
+  // Sombrita del pin
+  &::after {
     content: '';
     position: absolute;
     top: 114px;
@@ -87,9 +88,9 @@ animation: aparecer 0.6s ease-out both;
     background: rgba(124, 92, 214, 0.25);
     filter: blur(2px);
     animation: sombra-pin 2.8s ease-in-out infinite;
-}
+  }
 
-h1 {
+  h1 {
     margin: 0;
     font-size: 2.6rem !important;
     font-weight: 800 !important;
@@ -98,130 +99,111 @@ h1 {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-}
+  }
 
-p {
+  p {
     margin: 6px 0 0 !important;
     color: $tinta-suave !important;
     font-size: 1rem;
-}
+  }
 }
 
 form {
-padding: 20px 28px 4px;
-animation: aparecer 0.6s 0.1s ease-out both;
+  padding: 20px 28px 4px;
+  animation: aparecer 0.6s 0.1s ease-out both;
 }
 
+// ===== Campos =====
 ion-input {
---background: rgba(255, 255, 255, 0.85);
---color: #{$tinta};
---placeholder-color: #{$tinta-suave};
---border-color: #e6dcfb;
---border-radius: 16px;
---border-width: 1.5px;
---highlight-color-focused: #{$lila-fuerte};
---highlight-color-valid: #{$lila-fuerte};
---padding-start: 18px;
---padding-end: 14px;
+  --background: rgba(255, 255, 255, 0.85);
+  --color: #{$tinta};
+  --placeholder-color: #{$tinta-suave};
+  --border-color: #e6dcfb;
+  --border-radius: 16px;
+  --border-width: 1.5px;
+  --highlight-color-focused: #{$lila-fuerte};
+  --highlight-color-valid: #{$lila-fuerte};
+  --padding-start: 18px;
+  --padding-end: 14px;
 
-min-height: 56px;
-margin-bottom: 16px !important;
-color: $tinta;
-font-size: 1rem;
-transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-&.has-focus {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(124, 92, 214, 0.15);
-    border-radius: 16px;
-}
+  min-height: 56px;
+  margin-bottom: 16px !important;
+  color: $tinta;
+  font-size: 1rem;
 }
 
 ion-input-password-toggle {
-color: $lila-fuerte;
+  color: $lila-fuerte;
 }
 
-ion-button {
---background: linear-gradient(120deg, #{$lila-fuerte}, #{$rosa-fuerte});
---background-hover: linear-gradient(120deg, #6a4ac4, #d0608f);
---background-activated: linear-gradient(120deg, #6a4ac4, #d0608f);
---color: #fff;
---border-radius: 16px;
---box-shadow: 0 10px 24px rgba(124, 92, 214, 0.35);
+// ===== Enlaces nuevos (¿La olvidaste? / Crear cuenta / Quiero conducir) =====
+.forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 6px;
 
-height: 56px;
-margin: 12px 0 8px !important;
-font-family: 'Nunito', system-ui, sans-serif;
-font-size: 1.05rem;
-font-weight: 800;
-letter-spacing: 0.01em;
-text-transform: none;
-transition: transform 0.15s ease, filter 0.2s ease;
-
-&:hover {
-    filter: brightness(1.05);
+  a {
+    color: $lila-fuerte;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
 }
 
-&:active {
-    transform: scale(0.97);
+.submit {
+  margin: 12px 0 8px;
 }
 
-&[disabled] {
-    opacity: 0.75;
-}
-
-ion-spinner {
-    color: #fff;
-    margin-right: 8px;
-}
-}
-
+// ===== Parte de abajo de la tarjeta =====
 .hint {
-display: block;
-margin: 0;
-padding: 8px 28px 28px;
-border-bottom: 1px solid rgba(255, 255, 255, 0.9);
-border-radius: 0 0 32px 32px;
-box-shadow: 0 24px 50px rgba(124, 92, 214, 0.18);
-text-align: center;
-animation: aparecer 0.6s 0.2s ease-out both;
+  display: block;
+  margin: 0;
+  padding: 8px 28px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 24px 50px rgba(124, 92, 214, 0.18);
+  text-align: center;
+  animation: aparecer 0.6s 0.2s ease-out both;
 
-p {
+  p {
     margin: 0;
     color: $tinta-suave;
     font-size: 0.85rem;
-}
+  }
+
+  .links {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+
+    a {
+      color: $lila-fuerte;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    span {
+      margin: 0 4px;
+    }
+  }
 }
 
+// ===== Animaciones =====
 @keyframes fondo {
-0%   { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, center, center; }
-100% { background-position: 30% 20%, 70% 30%, 70% 70%, 30% 80%, center, center; }
+  0%   { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, center, center; }
+  100% { background-position: 30% 20%, 70% 30%, 70% 70%, 30% 80%, center, center; }
 }
 
 @keyframes flotar-pin {
-0%, 100% { transform: rotate(-45deg) translate(0, 0); }
-50%      { transform: rotate(-45deg) translate(6px, -6px); }
+  0%, 100% { transform: rotate(-45deg) translate(0, 0); }
+  50%      { transform: rotate(-45deg) translate(6px, -6px); }
 }
 
 @keyframes sombra-pin {
-0%, 100% { transform: scaleX(1); opacity: 1; }
-50%      { transform: scaleX(0.7); opacity: 0.5; }
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50%      { transform: scaleX(0.7); opacity: 0.5; }
 }
 
 @keyframes aparecer {
-from {
-    opacity: 0;
-    transform: translateY(16px);
-}
-}
-
-@media (prefers-reduced-motion: reduce) {
-ion-content::part(background),
-.brand,
-.brand::before,
-.brand::after,
-form,
-.hint {
-    animation: none;
-}
+  from { opacity: 0; transform: translateY(16px); }
 }

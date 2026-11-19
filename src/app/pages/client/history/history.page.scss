@@ -1,0 +1,25 @@
+.count { margin: 0; font-size: 0.85rem; }
+.loading { display: grid; place-items: center; padding: 60px 0; color: var(--p-lila-strong); }
+.list { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.item { overflow: hidden; border-radius: 20px; }
+
+/* Fila de cada viaje */
+.row { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 16px; border: 0; background: none;
+  color: var(--p-ink); font-family: var(--ion-font-family); text-align: left; cursor: pointer; }
+.route { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;
+  .date { color: var(--p-ink-soft); font-size: 0.78rem; font-weight: 700; }
+  .stop { display: flex; align-items: center; gap: 8px; overflow: hidden; font-size: 0.92rem; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
+}
+.dot { flex-shrink: 0; width: 10px; height: 10px;
+  &.origin { border: 3px solid var(--p-lila-strong); border-radius: 50%; }
+  &.dest { border-radius: 3px; background: var(--p-rosa-strong); }
+}
+.side { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; .price { font-size: 1.05rem; font-weight: 900; } }
+
+/* Detalle al abrir */
+.detail { padding: 0 16px 16px; border-top: 1px dashed var(--p-line);
+  dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  dt { color: var(--p-ink-soft); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+  dd { margin: 2px 0 0; font-weight: 700; }
+}
+.empty { border-radius: 24px; .btn { margin-top: 16px; } }

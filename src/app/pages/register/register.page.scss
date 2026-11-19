@@ -1,0 +1,48 @@
+.topbar { margin-bottom: 12px; }
+
+.sheet { padding: 28px 24px 24px; border-radius: 32px; }
+
+/* Pin de ubicación (igual al del login) */
+.pin {
+  width: 40px; height: 40px; margin: 0 auto 18px;
+  border-radius: 50% 50% 50% 0;
+  background: radial-gradient(circle at center, #fff 0 7px, transparent 8px), var(--p-grad);
+  box-shadow: 0 8px 18px rgba(224, 112, 159, 0.35);
+  transform: rotate(-45deg);
+}
+
+h1 { margin: 0; text-align: center; font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; }
+.sub { margin: 4px 0 20px; text-align: center; }
+
+/* Selector Pasajero / Conductor */
+.segment {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding: 5px; margin-bottom: 22px; border-radius: 18px;
+  background: var(--p-lila-soft);
+
+  button {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    height: 46px; border: 0; border-radius: 14px;
+    background: transparent; color: var(--p-ink-soft);
+    font-family: var(--ion-font-family); font-size: 0.95rem; font-weight: 800;
+    cursor: pointer; transition: all 0.2s ease;
+
+    &.on { background: #fff; color: var(--p-lila-strong); box-shadow: 0 6px 16px rgba(124, 92, 214, 0.18); }
+  }
+}
+
+.section {
+  margin: 6px 0 4px; padding-top: 16px;
+  border-top: 1px dashed var(--p-line);
+  .eyebrow { margin-bottom: 12px; color: var(--p-lila-strong); }
+}
+
+.plate { text-transform: uppercase; letter-spacing: 0.08em; }
+
+.note {
+  margin: 0 0 16px; padding: 12px 14px; border-radius: 14px;
+  background: var(--p-durazno); color: var(--p-durazno-strong); font-size: 0.85rem;
+}
+
+.btn { margin-top: 6px; }
+.footer { margin: 18px 0 0; text-align: center; font-size: 0.95rem; }

@@ -1,0 +1,64 @@
+<ion-content class="pastel-soft">
+  <div class="screen">
+    <div class="topbar">
+      <a class="icon-btn" routerLink="/client" aria-label="Volver">
+        <ion-icon name="arrow-back" aria-hidden="true"></ion-icon>
+      </a>
+      <div>
+        <h1>Mis viajes</h1>
+        @if (!loading() && total()) { <p class="muted count">{{ total() }} {{ total() === 1 ? 'viaje' : 'viajes' }}</p> }
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else {
+      <ul class="list">
+        @for (t of trips(); track t.id) {
+          <li class="item glass appear" [class.open]="open() === t.id">
+            <button type="button" class="row" (click)="toggle(t.id)" [attr.aria-expanded]="open() === t.id">
+              <div class="route">
+                <span class="date">{{ date(t) }}</span>
+                <span class="stop"><span class="dot origin" aria-hidden="true"></span>{{ origin(t) }}</span>
+                <span class="stop"><span class="dot dest" aria-hidden="true"></span>{{ destination(t) }}</span>
+              </div>
+              <div class="side">
+                <strong class="price">{{ t.final_fare ?? t.estimated_fare | cop }}</strong>
+                <span [class]="'pill ' + (t.status | statusTone)">{{ t.status | statusLabel }}</span>
+              </div>
+            </button>
+
+            @if (open() === t.id) {
+              <div class="detail appear">
+                <dl>
+                  <div><dt>Conductor</dt><dd>{{ t.driver?.user?.name ?? '—' }}</dd></div>
+                  <div><dt>Vehículo</dt><dd class="mono">{{ t.vehicle?.plate ?? '—' }}</dd></div>
+                  @if (t.distance_travelled_km) { <div><dt>Distancia</dt><dd class="mono">{{ t.distance_travelled_km | km }}</dd></div> }
+                  @if (t.duration_travelled_min) { <div><dt>Duración</dt><dd class="mono">{{ t.duration_travelled_min }} min</dd></div> }
+                  <div><dt>Viaje</dt><dd class="mono">#{{ t.id }}</dd></div>
+                </dl>
+                @if (t.status === 'completed') {
+                  <button type="button" class="btn soft small" (click)="rate(t)">
+                    <ion-icon name="star" aria-hidden="true"></ion-icon>
+                    Calificar viaje
+                  </button>
+                }
+              </div>
+            }
+          </li>
+        } @empty {
+          <li class="empty glass">
+            <ion-icon name="receipt-outline" aria-hidden="true"></ion-icon>
+            <h3>Aún no tienes viajes</h3>
+            <p>Cuando completes tu primer viaje aparecerá aquí.</p>
+            <a class="btn small" routerLink="/client">Pedir un viaje</a>
+          </li>
+        }
+      </ul>
+
+      <ion-infinite-scroll [disabled]="!hasMore()" (ionInfinite)="loadMore($event)">
+        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Cargando más viajes…"></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    }
+  </div>
+</ion-content>

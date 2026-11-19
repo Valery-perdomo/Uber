@@ -1,0 +1,92 @@
+<ion-content class="pastel-soft">
+  @if (!trip()) {
+    <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else {
+    <div class="wrap">
+      <!-- Mapa de fondo en toda la pantalla, con el carro moviéndose -->
+      <div class="map">
+        <app-real-map
+          [origin]="originLL()"
+          [destination]="status() === 'in_progress' ? destLL() : null"
+          [driver]="driverLL()"
+          [padTop]="170"
+          [padBottom]="360"
+        />
+      </div>
+
+      <!-- Tiempo de llegada (flota arriba) -->
+      <section class="hero appear" aria-live="polite">
+        <div class="hero-top">
+          <p class="eyebrow light">
+            @switch (status()) {
+              @case ('driver_arrived') { Tu conductor llegó }
+              @case ('in_progress') { En viaje }
+              @default { Conductor asignado }
+            }
+          </p>
+          <span class="live" aria-hidden="true"></span>
+        </div>
+
+        @if (status() === 'driver_arrived') {
+          <p class="big">¡Ya!</p>
+          <p class="sub">{{ driverFirst() }} te espera en {{ originName() }}</p>
+        } @else {
+          <p class="big">{{ eta() ?? '—' }}<span>min</span></p>
+          <p class="sub">
+            @if (status() === 'in_progress') {
+              Llegas a {{ destName() }}
+            } @else {
+              {{ driverFirst() }} va hacia {{ originName() }}
+            }
+          </p>
+        }
+      </section>
+
+      <!-- Panel de abajo -->
+      <section class="sheet appear">
+        <div class="handle" aria-hidden="true"></div>
+
+        <!-- Conductor y placa -->
+        <div class="driver">
+          <span class="avatar ring">{{ driverName() | initials }}</span>
+          <div class="who">
+            <p class="name">{{ driverName() }}</p>
+            <p class="meta">
+              <ion-icon name="star" aria-hidden="true"></ion-icon>
+              {{ rating() }} · {{ trip()?.vehicle?.brand }} {{ trip()?.vehicle?.model }}
+              @if (trip()?.vehicle?.color; as color) { · {{ color }} }
+            </p>
+          </div>
+          <span class="plate mono" aria-label="Placa">{{ trip()?.vehicle?.plate ?? '———' }}</span>
+        </div>
+
+        <div class="fare-row">
+          <span class="muted">Tarifa estimada</span>
+          <strong>{{ trip()?.estimated_fare ?? request()?.estimated_fare | cop }}</strong>
+        </div>
+
+        <!-- Acciones -->
+        <div class="actions">
+          <button type="button" class="action" (click)="call()">
+            <span class="circle call"><ion-icon name="call-outline" aria-hidden="true"></ion-icon></span>
+            Llamar
+          </button>
+
+          @if (canCancel()) {
+            <button type="button" class="action" (click)="cancel()" [disabled]="cancelling()">
+              <span class="circle cancel">
+                @if (cancelling()) { <ion-spinner name="crescent"></ion-spinner> } @else { <ion-icon name="close" aria-hidden="true"></ion-icon> }
+              </span>
+              Cancelar
+            </button>
+          }
+
+          <button type="button" class="action" (click)="sos()">
+            <span class="circle sos">SOS</span>
+            Emergencia
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</ion-content>

@@ -1,0 +1,218 @@
+<ion-content class="pastel-soft">
+  <div class="wrap" [class.picking]="mapPick()">
+    <!-- Mapa real con la ruta -->
+    <div class="map">
+      <app-real-map
+        [origin]="pickupLL()"
+        [destination]="destLL()"
+        [pulse]="phase() === 'searching'"
+        [nearbyCars]="phase() === 'searching'"
+        [pickMode]="mapPick()"
+        [padTop]="150"
+        [padBottom]="mapPick() ? 300 : 400"
+        (centerChange)="onMapMove($event)"
+      />
+    </div>
+
+    <!-- Saludo -->
+    <header class="greet glass appear">
+      <a class="avatar" routerLink="/profile" aria-label="Mi perfil" style="text-decoration: none">{{ user?.name | initials }}</a>
+      <div class="greet-text">
+        <p class="hello">Hola, {{ first }}</p>
+        <p class="question">¿A dónde vas hoy?</p>
+      </div>
+      <a class="icon-btn" routerLink="/client/history" aria-label="Historial de viajes">
+        <ion-icon name="receipt-outline" aria-hidden="true"></ion-icon>
+      </a>
+      <button class="icon-btn" type="button" (click)="logout()" aria-label="Cerrar sesión">
+        <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <!-- Panel inferior -->
+    <section class="sheet appear">
+      <div class="handle" aria-hidden="true"></div>
+
+      @if (phase() === 'loading') {
+        <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+      }
+
+      @if (phase() === 'plan' && mapPick(); as which) {
+        <!-- Elegir el punto moviendo el mapa -->
+        <div class="pick appear">
+          <p class="eyebrow">{{ which === 'pickup' ? 'Punto de recogida' : 'Destino' }}</p>
+          <p class="pick-hint">Mueve el mapa hasta que el pin quede {{ which === 'pickup' ? 'donde te recogen' : 'donde vas' }}.</p>
+          <div class="pick-address">
+            <span class="marker" [class.origin]="which === 'pickup'" [class.dest]="which === 'destination'" aria-hidden="true"></span>
+            <div class="pick-text">
+              @if (pickLoading() || !pickPlace()) {
+                <strong>Buscando dirección…</strong>
+              } @else {
+                <strong>{{ pickPlace()?.name }}</strong>
+                <small>{{ pickPlace()?.address }}</small>
+              }
+            </div>
+            @if (pickLoading()) { <ion-spinner name="dots"></ion-spinner> }
+          </div>
+          <button class="btn" type="button" (click)="confirmPick()" [disabled]="!pickCenter()">
+            Confirmar {{ which === 'pickup' ? 'recogida' : 'destino' }}
+          </button>
+          <button class="link cancel-pick" type="button" (click)="cancelPick()">Cancelar</button>
+        </div>
+      }
+
+      @if (phase() === 'plan' && !mapPick()) {
+        <div class="stops">
+          <div class="stop-row">
+            <span class="marker origin" aria-hidden="true"></span>
+            <button type="button" class="stop" [class.active]="editing() === 'pickup'" (click)="edit('pickup')">
+              <span class="eyebrow">Recogida</span>
+              <strong>{{ pickup()?.name ?? 'Elige el punto de recogida' }}</strong>
+              @if (pickup()?.address) { <small>{{ pickup()?.address }}</small> }
+            </button>
+            <button type="button" class="icon-btn locate" (click)="locate()" [disabled]="locating()" aria-label="Usar mi ubicación actual">
+              @if (locating()) { <ion-spinner name="crescent"></ion-spinner> } @else { <ion-icon name="locate-outline" aria-hidden="true"></ion-icon> }
+            </button>
+          </div>
+
+          <span class="connector" aria-hidden="true"></span>
+
+          <div class="stop-row">
+            <span class="marker dest" aria-hidden="true"></span>
+            <button type="button" class="stop" [class.active]="editing() === 'destination'" (click)="edit('destination')">
+              <span class="eyebrow">Destino</span>
+              @if (destination(); as d) {
+                <strong>{{ d.name }}</strong>
+                <small>{{ d.address }}</small>
+              } @else {
+                <strong class="placeholder">¿A dónde vas?</strong>
+              }
+            </button>
+          </div>
+        </div>
+
+        @if (editing(); as which) {
+          <div class="search appear">
+            <div class="search-box">
+              <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+              <input
+                type="search"
+                autocomplete="off"
+                [placeholder]="which === 'pickup' ? 'Buscar punto de recogida' : 'Buscar destino'"
+                [attr.aria-label]="which === 'pickup' ? 'Buscar punto de recogida' : 'Buscar destino'"
+                [value]="query()"
+                (input)="onQuery($event)"
+              />
+              <button type="button" class="clear" (click)="editing.set(null)" aria-label="Cerrar búsqueda">
+                <ion-icon name="close" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+
+            <ul class="suggestions">
+              <li>
+                <button type="button" class="map-option" (click)="startPick(which)">
+                  <span class="sug-icon map-icon"><ion-icon name="map-outline" aria-hidden="true"></ion-icon></span>
+                  <span class="sug-text">
+                    <strong>Elegir en el mapa</strong>
+                    <small>Mueve el pin a cualquier punto de Neiva</small>
+                  </span>
+                </button>
+              </li>
+              @for (s of suggestions(); track $index) {
+                <li>
+                  <button type="button" (click)="choose(s.place)">
+                    <span class="sug-icon"><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon></span>
+                    <span class="sug-text">
+                      <strong>{{ s.place.name }}</strong>
+                      <small>{{ s.place.address }} · {{ s.place.city }}</small>
+                    </span>
+                    @if (s.km !== null) { <span class="sug-km mono">{{ distanceLabel(s.km) }}</span> }
+                  </button>
+                </li>
+              } @empty {
+                @if (!searching()) {
+                  <li class="none">No encontramos ese lugar en Neiva. Prueba con otro nombre o dirección.</li>
+                }
+              }
+              @if (searching()) {
+                <li class="none searching-row"><ion-spinner name="dots"></ion-spinner> Buscando en Neiva…</li>
+              }
+            </ul>
+            <p class="hint-search">
+              @if (query().length < 3) { Escribe al menos 3 letras para buscar cualquier lugar de Neiva · }
+              Datos © OpenStreetMap
+            </p>
+          </div>
+        } @else {
+          @if (estimating()) {
+            <div class="fare skeleton" aria-busy="true">
+              <ion-spinner name="dots"></ion-spinner>
+              <span class="muted">Calculando tarifa…</span>
+            </div>
+          } @else if (estimate(); as e) {
+            <div class="fare appear">
+              <div>
+                <p class="eyebrow">Tarifa estimada</p>
+                <p class="price grad-text">{{ e.estimated_fare | cop }}</p>
+              </div>
+              <div class="fare-meta mono">
+                <span>{{ e.distance_km | km }}</span>
+                <span>≈ {{ e.duration_min }} min</span>
+              </div>
+            </div>
+            <p class="breakdown mono">
+              BASE {{ e.fare_breakdown.base_fare | cop }} · KM {{ e.fare_breakdown.price_per_km | cop }} ·
+              MIN {{ e.fare_breakdown.price_per_minute | cop }} · MÍN {{ e.fare_breakdown.minimum_fare | cop }} · {{ surge(e) }}
+            </p>
+          } @else if (estimateError()) {
+            <div class="fare empty-fare">
+              <p class="muted">No pudimos calcular la tarifa. Revisa tu conexión.</p>
+              <button type="button" class="link" (click)="refreshEstimate()">Reintentar</button>
+            </div>
+          } @else {
+            <div class="fare empty-fare">
+              <p class="muted">Elige tu destino para ver la ruta, la distancia, el tiempo y el precio.</p>
+            </div>
+          }
+
+          <button class="btn" type="button" [disabled]="!estimate() || requesting()" (click)="confirm()">
+            @if (requesting()) { <ion-spinner name="crescent"></ion-spinner> } @else { Confirmar viaje }
+          </button>
+        }
+      }
+
+      @if (phase() === 'searching') {
+        <div class="searching appear" aria-live="polite">
+          <div class="radar" aria-hidden="true">
+            <span></span><span></span>
+            <ion-icon name="car-sport-outline"></ion-icon>
+          </div>
+          <h2>Buscando conductor…</h2>
+          <p class="muted route-line">{{ request()?.origin_name }} → {{ request()?.destination_name }}</p>
+          <p class="timer mono">{{ elapsedLabel() }}</p>
+
+          @if (elapsed() >= searchLimit) {
+            <div class="notice">
+              Ningún conductor ha aceptado todavía. Puedes seguir esperando o cancelar la solicitud.
+            </div>
+          }
+
+          <div class="fare compact">
+            <div>
+              <p class="eyebrow">Tarifa estimada</p>
+              <p class="price small grad-text">{{ request()?.estimated_fare | cop }}</p>
+            </div>
+            <div class="fare-meta mono">
+              <span>{{ request()?.estimated_distance_km | km }}</span>
+              <span>≈ {{ request()?.estimated_duration_min }} min</span>
+            </div>
+          </div>
+
+          <button class="btn danger" type="button" (click)="cancelSearch()" [disabled]="cancelling()">
+            @if (cancelling()) { <ion-spinner name="crescent"></ion-spinner> } @else { Cancelar solicitud }
+          </button>
+        </div>
+      }
+    </section>
+  </div>
+</ion-content>

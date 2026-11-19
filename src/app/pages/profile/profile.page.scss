@@ -1,0 +1,19 @@
+.top-spinner { margin-left: auto; color: var(--p-lila-strong); }
+
+.card { display: flex; flex-direction: column; align-items: center; padding: 26px 20px 20px; text-align: center;
+  h2 { margin: 16px 0 8px; font-size: 1.5rem; font-weight: 900; }
+  .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+}
+
+.panel { margin-top: 14px; padding: 16px 18px;
+  dl { margin: 8px 0 0; }
+  dl > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0eaff;
+    &:last-child { border-bottom: 0; } }
+  dt { color: var(--p-ink-soft); font-size: 0.9rem; }
+  dd { margin: 0; font-weight: 800; text-align: right; word-break: break-word; }
+  .small { margin: 8px 0 0; font-size: 0.85rem; }
+}
+.star { color: #f2b33d; vertical-align: -2px; }
+.plate { padding: 3px 10px; border: 2px solid var(--p-ink); border-radius: 8px; background: #fff8d9; letter-spacing: 0.08em; }
+
+.logout { margin-top: 22px; }

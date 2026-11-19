@@ -1,0 +1,60 @@
+/* Pantalla completa: el mapa ocupa todo el fondo */
+.wrap { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+.map { position: absolute; inset: 0; z-index: 0; }
+
+/* Barra de los 4 estados */
+.progress { margin: 10px 0 16px;
+  .bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    span { height: 6px; border-radius: 99px; background: var(--p-line); &.done { background: var(--p-grad); } } }
+  .labels { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 0.75rem;
+    p { margin: 0; color: var(--p-ink-soft); }
+    .current { color: var(--p-lila-strong); font-weight: 900; } }
+}
+/* Sobre el mapa, la barra flota en una tarjeta */
+.wrap .progress {
+  position: relative; z-index: 2;
+  width: calc(100% - 32px); max-width: 448px;
+  margin: calc(14px + var(--ion-safe-area-top, 0px)) auto 0; padding: 14px 16px; border-radius: 20px;
+}
+
+/* Panel blanco de abajo (flota sobre el mapa) */
+.sheet {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 480px; margin: auto auto 0;
+  padding: 10px 20px 24px; border-radius: 30px 30px 0 0;
+  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(18px);
+  box-shadow: 0 -12px 40px rgba(124, 92, 214, 0.18);
+}
+.handle { width: 44px; height: 5px; margin: 0 auto 12px; border-radius: 99px; background: var(--p-line); }
+.caption { margin: 0 0 2px; }
+.address { margin: 0 0 14px; font-size: 1.35rem; font-weight: 900; line-height: 1.15; }
+
+/* Distancia, tiempo, tarifa */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.metric { padding: 12px; border: 1px solid #f0eaff; border-radius: 16px; background: rgba(255, 255, 255, 0.85);
+  p.mono { margin: 4px 0 0; font-size: 1rem; }
+  &.highlight { border-color: transparent; background: linear-gradient(135deg, var(--p-lila-soft), var(--p-rosa-soft));
+    .eyebrow, p.mono { color: var(--p-lila-strong); } }
+}
+
+/* Pasajero */
+.client { display: flex; align-items: center; gap: 12px; margin: 16px 2px 0;
+  > div { flex: 1; }
+  .name { margin: 0; font-weight: 800; }
+  .phone { margin: 2px 0 0; font-size: 0.8rem; }
+  .call { border-color: var(--p-menta); background: var(--p-menta); color: var(--p-menta-strong); }
+}
+
+.action { margin-top: 20px; }
+.screen > .action { margin-top: 28px; }
+.action.ghost { border-color: var(--p-lila); color: var(--p-lila-strong); }
+
+/* Resumen al finalizar */
+.summary { margin: 10px 0 0; padding: 26px 20px 20px; border-radius: 28px; text-align: center;
+  .check { font-size: 3.4rem; color: var(--p-menta-strong); }
+  h1 { margin: 6px 0 2px; font-size: 1.6rem; font-weight: 900; }
+  p { margin: 0; }
+  .final { margin: 14px 0 18px; font-size: 3rem; font-weight: 900; line-height: 1; }
+  .metrics { grid-template-columns: 1fr 1fr; text-align: left; }
+  .thanks { margin-top: 16px; font-size: 0.9rem; }
+}
